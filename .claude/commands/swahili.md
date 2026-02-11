@@ -15,19 +15,20 @@ Conduct a Swahili practice session.
 
 ## Core Philosophy
 
-**Conversational, not drill-based.** Every session simulates real exchanges. Grammar practice happens *inside* conversations, not as isolated test items.
+**Teach, then talk.** Every session explicitly teaches a concept *before* expecting the user to produce it in conversation. Grammar instruction is direct and clear — then practiced in structured exercises — then applied in a live scenario.
 
 Key principles:
-- **Context threading**: Each response shapes the next prompt
-- **Comprehension before production**: Hear/understand Swahili, then respond
-- **Situational immersion**: You're *in* a scenario, not answering test items
-- **Chunk recognition**: Prime useful phrases before scenarios, so you respond from recognition not assembly
+- **Explicit instruction first**: Show the rule, explain the pattern, give examples — before asking for production
+- **Controlled practice before free production**: Structured exercises (translation, fill-in, error correction) between teaching and conversation
+- **Conversation as application**: The scenario is where you *use* what you just learned, not where you discover it for the first time
+- **Context threading**: Within scenarios, each response shapes the next prompt
+- **Proactive error prevention**: If progress.json shows a confusion pattern relevant to today's concept, address it *during* the teach block, not after the user fails in conversation
 
 ## Session Type
 
 Based on `$ARGUMENTS`:
-- (empty or "practice") → Standard adaptive session
-- "review" → Focus heavily on weak areas from progress.json
+- (empty or "practice") → Standard adaptive session (teach + practice + conversation)
+- "review" → Focus heavily on weak areas from progress.json (more teaching, less conversation)
 - "explain [concept]" → Deep dive explanation of a grammar concept, then practice it
 
 ---
@@ -38,39 +39,123 @@ Based on `$ARGUMENTS`:
 
 - Greet in Swahili: "Habari yako!"
 - Show last session summary (if exists): date, score, areas practiced
-- Briefly mention today's scenario context
+- Announce today's focus concept clearly: "Leo tunajifunza [concept]" — "Today we're learning [concept]"
 
-**Do NOT announce "Today we'll practice [grammar concept]."** The grammar is implicit in the scenario.
+**DO announce the grammar concept.** Being explicit about what you're learning helps the brain organize incoming information.
 
-### 2. Chunk Priming (1 exchange)
+### 2. Teach (2-3 exchanges)
 
-Prime 3-5 key phrases the user will need for today's scenario:
+Explicitly teach the session's focus concept. This is **real instruction** — not a list of phrases to memorize.
+
+**Structure:**
 
 ```
-📌 Quick recognition — you'll hear these today:
-- "Habari za kazi?" = "How's work?"
-- "Inakwenda vizuri" = "It's going well"
-- "Tukutane saa..." = "Let's meet at..."
+📘 Today's concept: [Concept name]
 
-[Now we begin]
+**The rule:** [One clear rule statement]
+
+**How it works:**
+[2-3 sentence explanation of the pattern]
+
+**Examples:**
+- [Example 1] = [Translation] — [brief note on why]
+- [Example 2] = [Translation]
+- [Example 3] = [Translation]
+
+**Common trap:** [If relevant confusion_pattern exists in progress.json, address it here]
+- Wrong: [incorrect form] ← [why it's wrong]
+- Right: [correct form] ← [why it's right]
 ```
 
-**Selection priority:**
-1. Phrases relevant to today's scenario
-2. Phrases containing concepts with mastery < 60%
-3. Phrases from recent mistake_patterns
+Then immediately check understanding with a **recognition exercise** (1 exchange):
 
-### 3. Scenario 1 (3-5 exchanges)
+```
+Quick check — which is correct?
+A) [option]
+B) [option]
+C) [option]
+```
 
-Connected dialogue in a specific situation. You play a character; user responds naturally.
+Or for higher-mastery concepts, a **guided production** exercise:
+
+```
+Try this: [prompt with hint/scaffold]
+```
+
+**Concept selection priority:**
+1. Concepts with mastery 0% (never practiced)
+2. Concepts from recent mistake_patterns or confusion_patterns
+3. Concepts with mastery < 60%
+4. Next concept in tier progression
+
+**If teaching a new concept (mastery = 0%):**
+- Full explanation with 3+ examples
+- Recognition exercise before any production
+- Worked example showing step-by-step assembly
+
+**If reinforcing a weak concept (mastery 1-60%):**
+- Brief rule reminder
+- Address specific confusion pattern if one exists
+- Go straight to guided production
+
+**If reviewing a strong concept (mastery 61%+):**
+- One-line reminder only
+- Skip to guided practice
+
+### 3. Guided Practice (2-3 exchanges)
+
+Structured exercises applying the taught concept in isolation. The user knows the rule — now they apply it in controlled settings before going live.
+
+**Exercise types (pick 2-3):**
+
+**Translation (English → Swahili):**
+```
+Translate: "I saw my teacher yesterday."
+(Hint: "teacher" = mwalimu, M-wa class)
+```
+
+**Fill-in-the-blank:**
+```
+Complete: Watoto _____ (my) wanasoma.  (Hint: watoto = M-wa class)
+```
+
+**Error correction:**
+```
+Fix this sentence: Nilikwenda ofisini yangu.
+(Something is wrong with the possessive — what?)
+```
+
+**Sentence building:**
+```
+Build a sentence using: [subject] + [tense marker] + [verb] + [object with possessive]
+Words: sisi (we), -soma (read), kitabu (book), his/her
+```
+
+**Listen & Respond (comprehension):**
+```
+📎 Listen & Respond
+
+Me: Jana nilienda sokoni na rafiki yangu. Tulinunua matunda mengi.
+
+What did I do yesterday, and with whom?
+[Answer in English or Swahili — your choice]
+```
+
+**Feedback during guided practice:**
+- Correct: "Sawa! [brief affirmation]. [Move to next exercise]"
+- Incorrect: Use the structured feedback format (see Feedback Rules) + retry mechanism
+
+### 4. Conversation (3-5 exchanges)
+
+One scenario where the user applies the taught concept in natural dialogue. By this point, they've seen the rule, practiced it in isolation, and are ready to use it live.
 
 **Format:**
 ```
-📍 Scenario: Coffee with a colleague
+📍 Scenario: [Scenario name]
 
-[I'm your colleague. We're at a café in Nairobi.]
+[Context: who you are, where you are]
 
-Me: Habari yako! Umefika salama?
+Me: [Opening line in Swahili]
 ```
 
 Wait for response, then continue the conversation building on what they said.
@@ -80,34 +165,21 @@ Wait for response, then continue the conversation building on what they said.
 - If they mention a plan, ask a follow-up about it
 - If they express a preference, acknowledge it
 - Build the dialogue naturally — don't jump to unrelated topics
+- **Deliberately create opportunities** for the user to use today's taught concept
 
 **Feedback during scenarios:**
 - If correct: Brief acknowledgment woven into the conversation, then continue
-- If incorrect: Gentle correction *inside* the dialogue flow, then give them a chance to respond again
+- If incorrect: Gentle correction *inside* the dialogue flow, reference the rule taught earlier:
 
-Example of woven correction:
 ```
-User: Ninataka kahawa
-Me: Sawa! Kahawa moja. (Note: you could also say "Ningependa kahawa" for extra politeness — "I would like")
-     Na wewe, unapenda maziwa ndani?
+User: Nilikwenda ofisini yangu.
+Me: Karibu! Kumbuka — locative nouns (-ni) take kw- possessives: "ofisini kwangu."
+     Sawa, ulifanya nini ofisini kwako?
 ```
 
 **Do NOT use meta-labels like "[Exercise 3 of 10]" during scenarios.**
 
-### 4. Bridge Exercise (1-2 exchanges)
-
-Transition between scenarios. Use this for:
-- **Listen & Respond**: Comprehension check (see format below)
-- **Targeted drilling**: If a specific weakness surfaced in Scenario 1
-- **Quick translation**: One-off production practice
-
-This is the ONE place where traditional exercise format is acceptable.
-
-### 5. Scenario 2 (3-5 exchanges)
-
-Different context, overlapping grammar. Same threading rules as Scenario 1.
-
-### 6. Stretch (1 exchange)
+### 5. Stretch (1 exchange)
 
 Above current tier. Frame as challenge:
 ```
@@ -117,7 +189,7 @@ Above current tier. Frame as challenge:
 
 Use scaffolding for stretch exercises (see Adaptive Scaffolding Rules).
 
-### 7. Wrap-up
+### 6. Wrap-up
 
 **Score**: X/Y correct (percentage)
 
@@ -134,7 +206,7 @@ Use scaffolding for stretch exercises (see Adaptive Scaffolding Rules).
 
 **Next session preview**: Brief mention of what's coming
 
-### 8. Update Progress (REQUIRED)
+### 7. Update Progress (REQUIRED)
 
 After displaying wrap-up, update `data/progress.json` using the Write tool.
 
@@ -156,7 +228,8 @@ After displaying wrap-up, update `data/progress.json` using the Write tool.
      "accuracy": N,
      "tier": N,
      "focus_areas": ["concept1", "concept2"],
-     "scenarios_used": ["scenario_name_1", "scenario_name_2"],
+     "concepts_taught": ["concept_name"],
+     "scenarios_used": ["scenario_name"],
      "notes": "Brief session summary"
    }
    ```
@@ -174,14 +247,22 @@ After displaying wrap-up, update `data/progress.json` using the Write tool.
 ## Exercise Types & Mix
 
 **Target mix per session:**
-- 50% Scenario exchanges (6-10 exchanges across 2 scenarios)
-- 25% Listen & Respond (2-3 exchanges)
-- 15% Translate to Swahili (1-2 exchanges)
-- 10% Free expression (1 exchange)
+- 25% Explicit teaching (2-3 exchanges — rule explanation, examples, recognition check)
+- 25% Guided practice (2-3 exchanges — translation, fill-in, error correction, comprehension)
+- 35% Scenario conversation (3-5 exchanges — one connected dialogue)
+- 15% Stretch + wrap-up (1-2 exchanges)
+
+### Teaching Exchanges
+
+Explicit instruction: present the rule, show examples, check recognition.
+
+### Guided Practice Exchanges
+
+Structured exercises: translation, fill-in-the-blank, error correction, sentence building, listen & respond.
 
 ### Scenario Exchanges
 
-Conversational turns within a mini-scenario. User responds naturally to Swahili prompts.
+Conversational turns within a mini-scenario. User responds naturally to Swahili prompts, applying what was just taught.
 
 ### Listen & Respond
 
@@ -204,11 +285,12 @@ Variations:
 
 ### Translate to Swahili
 
-Traditional production exercise. Use sparingly, mainly in Bridge section.
+Production exercise with optional hints for lower-mastery concepts.
 
 Format:
 ```
 Translate: I want to meet tomorrow at 10.
+(Hint: "to meet" = kukutana)
 ```
 
 ### Free Expression
@@ -270,12 +352,12 @@ Free: Tell me about your plans for this weekend. (2-3 sentences)
 
 Apply scaffolding based on mastery levels from progress.json:
 
-| Mastery | Scaffolding |
-|---------|-------------|
-| 0 (new) | FULL: Recognition exercise → worked example → production |
-| 1-30% | HIGH: Worked example + hint if confusion pattern exists |
-| 31-60% | MEDIUM: Brief reminder → production |
-| 61%+ | LOW: Direct production (no scaffolding) |
+| Mastery | Scaffolding in Teach Block | Scaffolding in Practice |
+|---------|---------------------------|------------------------|
+| 0 (new) | FULL: Rule + 3+ examples + recognition exercise | Guided: hints, fill-in-the-blank |
+| 1-30% | HIGH: Rule + worked example + confusion pattern warning | Guided: hints on first exercise |
+| 31-60% | MEDIUM: Brief rule reminder | Direct: no hints unless stuck |
+| 61%+ | LOW: One-line reminder | Direct: production only |
 
 ### Recognition Before Production (mastery < 30%)
 
@@ -327,32 +409,7 @@ Let's build this:
 
 ## Feedback Rules
 
-### During Scenarios (Woven Feedback)
-
-**Correct response:**
-- Acknowledge naturally within dialogue
-- Continue the conversation
-- Optionally note something done well (briefly)
-
-Example:
-```
-User: Ninapenda kahawa sana.
-Me: Mimi pia! Kahawa ya Kenya ni nzuri sana. Unakunywa kahawa kila siku?
-```
-
-**Incorrect response:**
-- Gentle correction inside the dialogue
-- Give the correct form
-- Let them try again or continue
-
-Example:
-```
-User: Mimi nataka kahawa.
-Me: Ah, unasema "Ninataka kahawa" — the subject prefix ni- attaches to the verb.
-    Sawa, kahawa. Na maziwa?
-```
-
-### Outside Scenarios (Bridge/Stretch)
+### During Teaching & Guided Practice (Structured Feedback)
 
 **Correct:**
 - Brief affirmation: "Sawa!" / "Nzuri!"
@@ -370,9 +427,35 @@ Why:
 
 Then follow retry mechanism.
 
+### During Scenarios (Woven Feedback)
+
+**Correct response:**
+- Acknowledge naturally within dialogue
+- Continue the conversation
+- Optionally note something done well (briefly)
+
+Example:
+```
+User: Ninapenda kahawa sana.
+Me: Mimi pia! Kahawa ya Kenya ni nzuri sana. Unakunywa kahawa kila siku?
+```
+
+**Incorrect response:**
+- Gentle correction inside the dialogue
+- Reference the rule from the teach block
+- Give the correct form
+- Let them try again or continue
+
+Example:
+```
+User: Mimi nataka kahawa.
+Me: Ah, unasema "Ninataka kahawa" — the subject prefix ni- attaches to the verb, just like we covered.
+    Sawa, kahawa. Na maziwa?
+```
+
 ## Retry Mechanism
 
-After incorrect response outside scenarios:
+After incorrect response in guided practice:
 
 **First attempt incorrect:**
 ```
@@ -472,85 +555,105 @@ If user types:
 ```
 Habari yako! Karibu tena.
 
-📊 Last session (Jan 28): 7/10 correct, Tier 1
-Focus was possessives — Ki-Vi prefix agreement is solid, possessive stems (-angu/-ake) need work.
+📊 Last session (Feb 8): 8/10 correct, Tier 1
+Strong on past -li- and future -ta-. Locative possessives (kwangu vs yangu) still tricky.
 
-Today: Two café scenarios. You'll practice responding naturally.
+Leo tunajifunza: Locative possessives — how possession works with -ni location words.
 ```
 
-### Chunk Priming
+### Teach
 ```
-📌 Quick recognition — phrases for today:
-- "Habari za asubuhi?" = "How's your morning?"
-- "Ninataka..." / "Ningependa..." = "I want..." / "I would like..."
-- "Inakwenda vizuri" = "It's going well"
-- "Kahawa au chai?" = "Coffee or tea?"
-```
+📘 Today's concept: Locative Possessives
 
-### Scenario 1
-```
-📍 Scenario: Morning coffee run
+**The rule:** When a noun ends in -ni (making it a location), possessives use kw- instead of the normal noun class prefix.
 
-[I'm your colleague Mary. We bump into each other at the office café.]
+**How it works:**
+Normally, possessives match the noun class: nyumba yangu (my house, N-class → y-).
+But when you add -ni to make it a location — nyumbani — it shifts to the locative class.
+Locative class possessives always use kw-: kwangu, kwako, kwake, kwetu, kwenu, kwao.
 
-Me: Habari za asubuhi! Umefika mapema leo.
-```
+**Examples:**
+- nyumbani kwangu = at my home (NOT nyumbani yangu)
+- ofisini kwake = at his/her office (NOT ofisini yake)
+- shuleni kwetu = at our school (NOT shuleni yetu)
 
-User: Habari! Ndiyo, niliamka mapema.
+**Common trap:** You've used "ofisini yangu" and "nyumbani yake" before.
+- Wrong: ofisini yangu ← treats "ofisini" like a regular N-class noun
+- Right: ofisini kwangu ← the -ni suffix triggers locative class → kw-
 
-```
-Me: Poa. Unataka kahawa au chai?
-```
-
-User: Ninataka kahawa.
-
-```
-Me: Mimi pia! Kahawa mbili basi.
-    [to barista] Kahawa mbili, tafadhali.
-    [back to you] Kazi yako inakwendaje wiki hii?
+Quick check — which is correct for "at your office"?
+A) ofisini yako
+B) ofisini kwako
+C) ofisi kwako
 ```
 
-User: Inakwenda vizuri. Nina mkutano leo.
+### Guided Practice
+```
+Sawa! B is correct — ofisini kwako.
+
+Now let's practice:
+
+1. Translate: "I work at my office."
+   (Hint: -fanya kazi = to work)
+```
+
+User: Ninafanya kazi ofisini kwangu.
 
 ```
-Me: Mkutano gani?
+Nzuri sana! Perfect locative possessive.
+
+2. Fix this sentence: "Watoto wanasoma shuleni yao."
+   (Something is wrong with the possessive — what?)
+```
+
+User: shuleni kwao
+
+```
+Sawa! shuleni kwao — the -ni makes it locative, so kw- possessive.
+
+3. Translate: "She is cooking at her home."
+   (Hint: -pika = to cook)
+```
+
+### Conversation
+```
+📍 Scenario: Giving directions to a new colleague
+
+[I'm a new colleague at your Nairobi office. It's my first week.]
+
+Me: Habari! Mimi ni Sarah. Ni wiki yangu ya kwanza hapa. Ofisi yako iko wapi?
+```
+
+User: Habari Sarah! Karibu. Ofisi yangu iko hapa, karibu na ofisini kwako.
+
+```
+Me: Ah, asante! (Quick note: since you're pointing to a specific office, not a location-inside,
+     both "ofisi yangu" ✓ and "ofisini kwangu" work — you used them correctly!)
+     Sawa, ninakwenda wapi kwa chakula cha mchana? Unapendekeza wapi?
 ```
 
 [Continues naturally...]
 
-### Bridge
+### Stretch
 ```
-📎 Listen & Respond
+🔥 Stretch: This one's harder — mistakes expected!
 
-Me: Mary anasema kwamba mkutano wake uliisha saa tano. Sasa yeye anataka kwenda nyumbani mapema kwa sababu amechoka sana.
-
-What's Mary's situation? (Answer in English or Swahili)
+Translate: "Before the meeting at our office, I need to call my boss at his home."
+(Hint: kabla ya = before, -piga simu = to call, bosi = boss)
 ```
-
-### Scenario 2
-```
-📍 Scenario: Planning lunch
-
-[Later that day. I'm a different colleague, John.]
-
-Me: Sasa! Tunakwenda wapi kwa chakula cha mchana?
-```
-
-[Continues...]
 
 ### Wrap-up
 ```
-📊 Session complete: 9/11 correct (82%)
+📊 Session complete: 8/10 correct (80%)
 
 ✓ What clicked:
-- Present tense exchanges were smooth
-- Responded naturally to questions
-- Good vocabulary recall
+- Locative possessives clicked after the teach block — used kwangu/kwako correctly in conversation
+- Past tense remains solid
 
-📌 Anchor for possessive stems:
-- Rule: -angu (my), -ako (your), -ake (his/her)
-- Anchor: A-A-A — "angu-ako-ake" — first three share 'a', but end differently
-- Example: Kahawa yangu, kahawa yako, kahawa yake
+📌 Anchor for locative possessives:
+- Rule: Noun + -ni → locative class → possessives use kw-
+- Anchor: "-ni = kw-" — the -ni is a signal to switch to kw-
+- Example: nyumbani kwangu, ofisini kwake, shuleni kwetu
 
-Next session: We'll introduce -me- (perfect tense) in scheduling contexts.
+Next session: Perfect tense -me- ("I have done...") in scheduling contexts.
 ```

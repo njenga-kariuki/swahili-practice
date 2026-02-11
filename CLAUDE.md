@@ -10,7 +10,7 @@ Daily 10-15 minute Swahili practice focused on building conversational fluency i
 - NOT aiming for academic expertise - proper but simple, professional interactions
 
 ## Core Philosophy
-**Conversational, not academic.** Every exercise simulates real exchanges - greetings, questions, responses, requests, opinions. No isolated vocabulary drilling.
+**Teach, then talk.** Every session explicitly teaches a grammar concept first, practices it in structured exercises, then applies it in a conversational scenario. This follows the learn → practice → apply progression that adult L2 learners need. Conversation is the goal, but instruction comes first.
 
 ## What Jay Already Knows (from Stanford)
 See `references/Swahili_Class_Vocab_12.1_v3.pdf` for full baseline.
@@ -28,17 +28,19 @@ See `references/Swahili_Class_Vocab_12.1_v3.pdf` for full baseline.
 
 ## Session Structure
 - Target: 10-15 minutes daily
-- Mix of: Respond to questions, translate to Swahili, comprehension, free expression
+- Flow: Opening → Teach concept → Guided practice → Conversational scenario → Stretch → Wrap-up
+- ~25% teaching, ~25% structured practice, ~35% conversation, ~15% stretch/wrap-up
 - 8-12 exchanges per session
 - Adaptive difficulty based on performance
 
 ## Key Principles
-1. **Integration over isolation**: Every exercise combines 2+ grammar concepts
-2. **Explain the why**: When correcting, specify which noun class, which prefix, why that pattern
-3. **Kenyan focus**: Kenyan dialect, business/professional contexts, common expressions
-4. **Momentum**: Don't over-explain when user is getting things right
+1. **Teach before expecting production**: Show the rule, explain the pattern, give examples — before asking the user to produce it
+2. **Explain the why**: When teaching and correcting, specify which noun class, which prefix, why that pattern
+3. **Controlled practice before conversation**: Structured exercises (translation, fill-in, error correction) between teaching and free conversation
+4. **Kenyan focus**: Kenyan dialect, business/professional contexts, common expressions
 5. **Progressive complexity**: Build from current level, stretch slightly each session
 6. **Proper but simple**: Grammatically correct, not overly formal or literary
+7. **Proactive error prevention**: Address known confusion patterns during teaching, not after failure
 
 ## Conversational Scenarios (Kenyan business context)
 - Greetings and introductions (Habari yako? Habari za asubuhi?)
