@@ -43,6 +43,31 @@ Based on `$ARGUMENTS`:
 
 **DO announce the grammar concept.** Being explicit about what you're learning helps the brain organize incoming information.
 
+### 1.5 Retention Pulse (folded into Opening — zero extra exchanges)
+
+Append 2-3 recall items to the Opening message. The user answers inline alongside any greeting.
+
+**Format:**
+```
+🔁 Quick recall (answer inline):
+1. [Compound recall sentence requiring 2+ previously mastered concepts]
+2. [Compound recall sentence]
+3. [Compound recall sentence]
+```
+
+**Selection algorithm:**
+- Pool: concepts where `mastery >= 60` AND `last_practiced` is not null AND concept is NOT today's teaching focus
+- Score each concept: `(mastery / 100) * (days_since_last_practiced / 7)` — high mastery + long gap = highest priority
+- Boost: `+0.5` if concept appears in `confusion_patterns`
+- Pick top 2-3 concepts, then design compound sentences that test them simultaneously (e.g., one sentence requiring past tense + object infix + correct noun class)
+
+**Regression handling:**
+- All correct → "Retention solid!" — move to Teach
+- Minor slip (1 wrong) → one-line correction inline, flag concept for monitoring, continue to Teach
+- Pattern regression (2+ wrong, or same concept regressed in recent sessions) → correct inline, add 2-sentence micro-review at START of Teach block before new concept. Do NOT replace today's focus
+
+**Scoring:** Pulse items do NOT count toward session score and do NOT update `attempts`/`correct` in grammar_mastery. They are diagnostic only.
+
 ### 2. Teach (2-3 exchanges)
 
 Explicitly teach the session's focus concept. This is **real instruction** — not a list of phrases to memorize.
@@ -83,10 +108,12 @@ Try this: [prompt with hint/scaffold]
 ```
 
 **Concept selection priority:**
-1. Concepts with mastery 0% (never practiced)
-2. Concepts from recent mistake_patterns or confusion_patterns
-3. Concepts with mastery < 60%
-4. Next concept in tier progression
+1. Concepts with mastery 0% that are in `flagged_gaps` with status "pending" (user-flagged unknowns)
+2. Concepts with mastery 0% (never practiced)
+3. Concepts with 2+ retention regressions in last 14 days (from retention pulse results)
+4. Concepts from recent mistake_patterns or confusion_patterns
+5. Concepts with mastery < 60%
+6. Next concept in tier progression
 
 **If teaching a new concept (mastery = 0%):**
 - Full explanation with 3+ examples
@@ -166,6 +193,7 @@ Wait for response, then continue the conversation building on what they said.
 - If they express a preference, acknowledge it
 - Build the dialogue naturally — don't jump to unrelated topics
 - **Deliberately create opportunities** for the user to use today's taught concept
+- **If the user flags something** (via `??` or English comment): deliver a mini-detour (see Flag Detection), then resume the scenario
 
 **Feedback during scenarios:**
 - If correct: Brief acknowledgment woven into the conversation, then continue
@@ -241,6 +269,33 @@ After displaying wrap-up, update `data/progress.json` using the Write tool.
 6. **confusion_patterns**: Add if same error type occurred 2+ times
 
 7. **current_tier**: Advance if 75%+ accuracy over last 3 sessions AND core concepts at 60%+ mastery
+
+8. **retention_pulse**: Record in each `session_history` entry:
+   ```json
+   "retention_pulse": {
+     "concepts_tested": ["past_li", "object_infix_m"],
+     "result": "pass" | "partial" | "regression",
+     "regressed_concepts": []
+   }
+   ```
+
+9. **flagged_gaps**: For any items flagged via `??` or English questions during the session:
+   - Add new entries to the top-level `flagged_gaps` array with status "pending"
+   - If the flagged concept doesn't exist in `grammar_mastery`, add it at mastery 0%
+   - Update status to "taught" when formally covered in a teach block
+   - Update status to "mastered" when concept reaches 60%+ mastery
+   - Each entry:
+     ```json
+     {
+       "concept": "subjunctive_wacha",
+       "flagged_construction": "wacha tumpigie",
+       "meaning": "let's call him/her",
+       "flagged_date": "2026-02-26",
+       "session": 12,
+       "status": "pending",
+       "taught_date": null
+     }
+     ```
 
 ---
 
@@ -502,6 +557,38 @@ If user types:
 - "harder" → Increase complexity
 - "skip" → Move to next part
 - "end session" / "done" → Jump to wrap-up
+
+---
+
+## Flag Detection
+
+Users can flag unfamiliar words or constructions during any part of the session.
+
+**Detection triggers:**
+- `??` adjacent to a Swahili word: `wacha?? tumpigie` or `tumuulize??`
+- English questions embedded in a Swahili response: "I don't know this", "what does X mean?"
+- Bare `??` = "I don't understand the prompt"
+
+**On detection:**
+1. Identify the flagged item (word, construction, or full prompt)
+2. Deliver a mini-detour inline — NOT a full teach block:
+
+```
+📝 Quick note on "[item]":
+**[Item]** = [English meaning]
+**Pattern:** [One-sentence rule]
+**Breakdown:** [Morpheme-by-morpheme]
+(Full lesson coming soon. For now: [simpler alternative at current tier])
+```
+
+3. Resume the current flow exactly where it was (repeat the exercise/prompt if needed)
+4. Track in `flagged_gaps` in progress.json (see Section 7)
+
+**Constraints:**
+- Max 5 lines for the mini-detour
+- No score penalty for flagging
+- Don't skip the current exercise — resume it after the detour
+- If the same item is flagged twice, give a slightly expanded explanation
 
 ---
 
