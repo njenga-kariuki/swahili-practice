@@ -1,13 +1,17 @@
 // Swahili Q&A Telegram Bot (Cloudflare Worker)
 //
 // Architecture note — PROGRESS ISOLATION:
-// This bot is a read-only lookup tool. It has zero access to the local filesystem
-// and NEVER writes to progress.json. The system prompt is a static snapshot baked
-// in at deploy time via build-prompt.sh. KV memory is ephemeral (1-turn, 30-min TTL)
-// purely for follow-up context — it auto-expires and carries no learning state.
+// This bot is a lookup tool with zero access to the local filesystem and NEVER
+// writes to progress.json. The system prompt is a static snapshot baked in at
+// deploy time via build-prompt.sh.
 //
-// Jay's structured progress tracking happens exclusively through /swahili and /ask
-// commands in Claude Code, which read and write progress.json directly.
+// KV usage (both under CHAT_MEMORY namespace):
+//   chat:{chatId}  — ephemeral 1-turn context (30-min TTL)
+//   log:{chatId}:{ts} — persistent exchange log (no TTL), batch-processed
+//                        into progress.json via /review-telegram command
+//
+// Jay's structured progress tracking happens exclusively through /swahili, /ask,
+// and /review-telegram commands in Claude Code.
 // This bot is the "field reference" — quick lookups while out in Nairobi.
 
 import SYSTEM_PROMPT from './system-prompt.txt';
@@ -48,9 +52,9 @@ export default {
         '• "How do I say excuse me?"\n' +
         '• "What does hatutakuja mean?"\n' +
         '• "Difference between -me- and -li-"\n' +
-        '• "Is there a polite way to say I don\'t understand?"\n\n' +
-        'Quick follow-ups work too (just reply within 30 min).\n\n' +
-        'Note: This is a quick-lookup tool — nothing here is tracked. Use /ask in Claude Code for lookups you want logged for lesson reinforcement.');
+        '• "looking forward to it" (bare phrases auto-translate)\n' +
+        '• "q where is the meeting" (q prefix = quick translate)\n\n' +
+        'Quick follow-ups work too (just reply within 30 min).');
       return new Response('OK', { status: 200 });
     }
 
@@ -64,7 +68,13 @@ export default {
         messages.push({ role: 'assistant', content: prevExchange.assistant });
       }
 
-      messages.push({ role: 'user', content: text });
+      // Quick translate: `q ` prefix → explicit translation request
+      let userText = text;
+      if (/^q\s+/i.test(text)) {
+        userText = `Translate this to Swahili: "${text.slice(2).trim()}"`;
+      }
+
+      messages.push({ role: 'user', content: userText });
 
       // Call Claude API
       const model = env.MODEL || 'claude-sonnet-4-6';
@@ -135,6 +145,15 @@ export default {
         JSON.stringify({ user: text, assistant: responseText }),
         { expirationTtl: 1800 }
       );
+
+      // Persistent exchange log (no TTL) for batch processing via /review-telegram
+      const logKey = `log:${chatId}:${Date.now()}`;
+      await env.CHAT_MEMORY.put(logKey, JSON.stringify({
+        ts: new Date().toISOString(),
+        user: text,
+        assistant: responseText,
+        had_context: !!prevExchange,
+      }));
     } catch (err) {
       console.error('Worker error:', err.message, err.stack);
       await sendTelegram(env, chatId, `Samahani — unexpected error: ${err.message}. Check worker logs: npx wrangler tail`);

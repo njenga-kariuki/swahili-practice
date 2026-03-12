@@ -109,11 +109,14 @@ Try this: [prompt with hint/scaffold]
 
 **Concept selection priority:**
 1. Concepts with mastery 0% that are in `flagged_gaps` with status "pending" (user-flagged unknowns)
-2. Concepts with mastery 0% (never practiced)
-3. Concepts with 2+ retention regressions in last 14 days (from retention pulse results)
-4. Concepts from recent mistake_patterns or confusion_patterns
-5. Concepts with mastery < 60%
-6. Next concept in tier progression
+2. Concepts/vocab from `ad_hoc_questions` where `reinforced: false` — weave into exercises using the logged vocab and grammar
+3. Concepts with mastery 0% (never practiced)
+4. Concepts with 2+ retention regressions in last 14 days (from retention pulse results)
+5. Concepts from recent mistake_patterns or confusion_patterns
+6. Concepts with mastery < 60%
+7. Next concept in tier progression
+
+**Vocabulary preference:** When choosing words for exercises and scenarios, prefer words from unreinforced `ad_hoc_questions` entries (`reinforced: false`). Weave them into translation prompts, sentence building, and scenario dialogue naturally.
 
 **If teaching a new concept (mastery = 0%):**
 - Full explanation with 3+ examples
@@ -279,7 +282,11 @@ After displaying wrap-up, update `data/progress.json` using the Write tool.
    }
    ```
 
-9. **flagged_gaps**: For any items flagged via `??` or English questions during the session:
+9. **ad_hoc_questions**: For any `ad_hoc_questions` entries with `reinforced: false` that were practiced during the session:
+   - Set `reinforced` to `true`
+   - Set `reinforced_date` to today's date
+
+10. **flagged_gaps**: For any items flagged via `??` or English questions during the session:
    - Add new entries to the top-level `flagged_gaps` array with status "pending"
    - If the flagged concept doesn't exist in `grammar_mastery`, add it at mastery 0%
    - Update status to "taught" when formally covered in a teach block
