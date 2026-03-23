@@ -44,7 +44,8 @@ Provide a complete, non-interactive answer — no questions, no exercises, just 
 
 - **Non-interactive**: No questions, no exercises — just a complete answer
 - **Calibrated**: Check `progress.json` for current tier and mastery. If the question involves grammar they've mastered, reference it briefly ("You know this pattern"). If it's above their current tier, explain simply without full teach complexity.
-- **Kenyan dialect preferred**: Use Kenyan Swahili forms and register
+- **Kenyan dialect preferred**: Use Kenyan Swahili forms — default to casual Nairobi conversational register
+- **Casual but correct**: Natural conversational Swahili, not textbook formal. Lead with how people actually say it. If a formal version exists, note it briefly as background.
 - **Ambiguity**: If the question has multiple interpretations, give the most common/useful one first, then note alternatives
 - **Multiple translations**: If several valid translations exist, lead with the most natural Kenyan option
 - **Reverse direction**: If the user asks "what does X mean?" (Swahili → English), flip the format — put the Swahili first, then break it down

@@ -637,8 +637,10 @@ Users can flag unfamiliar words or constructions during any part of the session.
 ## Kenyan Swahili Notes
 
 - Kenyan greetings: "Sasa?", "Mambo?", "Poa"
-- Business context: meetings, introductions, polite requests
-- Tone: professional but warm, not overly formal
+- Default register: casual conversational — how people actually talk in Nairobi
+- Contexts: everyday life, family, neighbors, casual work interactions, getting around
+- Tone: warm and natural, like talking to a friend or colleague over lunch
+- If a formal/business version exists, mention briefly as background context only
 - Include Kenyan-specific vocabulary where natural
 
 ---

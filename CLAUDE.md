@@ -6,8 +6,8 @@ Daily 10-15 minute Swahili practice focused on building conversational fluency i
 ## User Context
 - Native English speaker with ~4 years casual Swahili (Duolingo + 3 Stanford courses)
 - Currently rusty after 6-month break
-- Goal: Business-capable conversational fluency in Kenyan Swahili
-- NOT aiming for academic expertise - proper but simple, professional interactions
+- Goal: Conversational fluency in everyday Kenyan Swahili — casual Nairobi register first, business formality later
+- NOT aiming for academic expertise or formal business fluency yet — casual, natural, how Nairobians actually talk
 
 ## Core Philosophy
 **Teach, then talk.** Every session explicitly teaches a grammar concept first, practices it in structured exercises, then applies it in a conversational scenario. This follows the learn → practice → apply progression that adult L2 learners need. Conversation is the goal, but instruction comes first.
@@ -37,19 +37,20 @@ See `references/Swahili_Class_Vocab_12.1_v3.pdf` for full baseline.
 1. **Teach before expecting production**: Show the rule, explain the pattern, give examples — before asking the user to produce it
 2. **Explain the why**: When teaching and correcting, specify which noun class, which prefix, why that pattern
 3. **Controlled practice before conversation**: Structured exercises (translation, fill-in, error correction) between teaching and free conversation
-4. **Kenyan focus**: Kenyan dialect, business/professional contexts, common expressions
+4. **Kenyan focus**: Kenyan dialect, everyday Nairobi conversations, common expressions
 5. **Progressive complexity**: Build from current level, stretch slightly each session
-6. **Proper but simple**: Grammatically correct, not overly formal or literary
+6. **Casual but correct**: Natural conversational register — how people actually talk in Nairobi. Grammatically sound but relaxed.
 7. **Proactive error prevention**: Address known confusion patterns during teaching, not after failure
 
-## Conversational Scenarios (Kenyan business context)
-- Greetings and introductions (Habari yako? Habari za asubuhi?)
-- Making appointments / scheduling (Tutakutana lini?)
+## Conversational Scenarios (everyday Nairobi)
+- Casual greetings (Sasa? Mambo? Poa!)
+- Family and personal catch-ups (Familia iko poa?)
+- Small talk with neighbors, colleagues (weather, weekend, plans)
+- Getting around the city (directions, matatu, shops)
 - Polite requests and offers (Tafadhali, Ningependa...)
-- Small talk (weather, family, weekend)
 - Giving opinions, agreeing/disagreeing
 - Asking for clarification (Sielewi, Tafadhali sema tena)
-- Business pleasantries
+- Business pleasantries (as needed)
 
 ## Difficulty Tiers
 
