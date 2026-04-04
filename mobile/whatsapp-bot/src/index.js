@@ -1,10 +1,10 @@
-// Swahili Coach Telegram Bot (Cloudflare Worker)
+// Swahili Coach WhatsApp Bot (Cloudflare Worker)
 //
 // Architecture:
-//   BASE_PROMPT         — static system prompt baked at deploy time (role, format, grammar, vocab)
-//   chat:{chatId}       — sliding conversation window (last 30 turns, 24hr TTL)
-//   profile:{chatId}    — persistent learner model (no TTL) — concepts, vocab, gaps, teaching log
-//   log:{chatId}:{ts}   — persistent exchange log (no TTL), batch-processed via /review-telegram
+//   BASE_PROMPT              — static system prompt baked at deploy time (role, format, grammar, vocab)
+//   chat:{phoneNumber}       — sliding conversation window (last 30 turns, 24hr TTL)
+//   profile:{phoneNumber}    — persistent learner model (no TTL) — concepts, vocab, gaps, teaching log
+//   log:{phoneNumber}:{ts}   — persistent exchange log (no TTL), batch-processed via /review-whatsapp
 //
 // Each response includes a hidden <<META:...>> line that the handler strips before
 // delivery and uses to update the learner profile.
@@ -16,35 +16,50 @@ const HISTORY_TTL = 86400; // 24 hours
 
 export default {
   async fetch(request, env) {
-    if (request.method !== 'POST') {
-      return new Response('OK', { status: 200 });
+    // Handle GET: WhatsApp webhook verification
+    if (request.method === 'GET') {
+      const url = new URL(request.url);
+      const mode = url.searchParams.get('hub.mode');
+      const token = url.searchParams.get('hub.verify_token');
+      const challenge = url.searchParams.get('hub.challenge');
+
+      if (mode === 'subscribe' && token === env.WHATSAPP_VERIFY_TOKEN) {
+        return new Response(challenge, { status: 200 });
+      }
+      return new Response('Forbidden', { status: 403 });
     }
 
-    let update;
+    if (request.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+
+    let body;
     try {
-      update = await request.json();
+      body = await request.json();
     } catch {
       return new Response('Bad request', { status: 400 });
     }
 
-    const message = update.message;
-    if (!message?.text || !message?.chat?.id) {
+    // WhatsApp sends status updates (delivered, read) with no messages — acknowledge silently
+    const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    if (!message || message.type !== 'text' || !message.text?.body) {
       return new Response('OK', { status: 200 });
     }
 
-    const chatId = String(message.chat.id);
-    const text = message.text.trim();
-    const allowedIds = (env.ALLOWED_CHAT_IDS || '').split(',').map(s => s.trim());
+    const phoneNumber = message.from;
+    const text = message.text.body.trim();
+    const phoneNumberId = body.entry[0].changes[0].value.metadata.phone_number_id;
+    const allowedNumbers = (env.ALLOWED_PHONE_NUMBERS || '').split(',').map(s => s.trim());
 
-    // Chat ID guard — silent 200 for unauthorized users
-    if (!allowedIds.includes(chatId)) {
+    // Phone number guard — silent 200 for unauthorized users
+    if (!allowedNumbers.includes(phoneNumber)) {
       return new Response('OK', { status: 200 });
     }
 
-    // /start command
-    if (text === '/start') {
-      await sendTelegram(env, chatId,
-        'Habari! 🇰🇪\n\n' +
+    // Help command
+    if (text.toLowerCase() === 'help') {
+      await sendWhatsApp(env, phoneNumberId, phoneNumber,
+        'Habari! \n\n' +
         'Send me any Swahili question — translations, grammar breakdowns, Kenyan usage.\n\n' +
         'Examples:\n' +
         '• "How do I say excuse me?"\n' +
@@ -58,7 +73,7 @@ export default {
 
     try {
       // Read conversation history (sliding window, 24hr TTL)
-      const historyRaw = await env.CHAT_MEMORY.get(`chat:${chatId}`, 'json');
+      const historyRaw = await env.CHAT_MEMORY.get(`chat:${phoneNumber}`, 'json');
       let history = [];
       if (Array.isArray(historyRaw)) {
         history = historyRaw;
@@ -68,7 +83,7 @@ export default {
       }
 
       // Read learner profile (persistent, no TTL)
-      const profile = await env.CHAT_MEMORY.get(`profile:${chatId}`, 'json');
+      const profile = await env.CHAT_MEMORY.get(`profile:${phoneNumber}`, 'json');
 
       // Build messages from conversation history
       const messages = [];
@@ -127,7 +142,7 @@ export default {
         } else {
           userMsg = `Samahani — translation service error (${apiResponse.status}). Check worker logs: npx wrangler tail`;
         }
-        await sendTelegram(env, chatId, userMsg);
+        await sendWhatsApp(env, phoneNumberId, phoneNumber, userMsg);
         return new Response('OK', { status: 200 });
       }
 
@@ -138,21 +153,17 @@ export default {
 
       if (!rawResponse) {
         console.error('Empty response from Claude:', JSON.stringify(result));
-        await sendTelegram(env, chatId, 'Got an empty response — try rephrasing your question.');
+        await sendWhatsApp(env, phoneNumberId, phoneNumber, 'Got an empty response — try rephrasing your question.');
         return new Response('OK', { status: 200 });
       }
 
       // Extract and strip META line before delivery
       const { cleanText, meta } = extractMeta(rawResponse);
 
-      // Format for Telegram HTML
-      const html = formatForTelegram(cleanText);
+      // Format for WhatsApp
+      const formatted = formatForWhatsApp(cleanText);
 
-      // Send with HTML parse mode, fallback to plain text
-      const sent = await sendTelegram(env, chatId, html, 'HTML');
-      if (!sent) {
-        await sendTelegram(env, chatId, cleanText);
-      }
+      await sendWhatsApp(env, phoneNumberId, phoneNumber, formatted);
 
       // Update conversation history (sliding window, cap at HISTORY_CAP)
       const updatedHistory = [
@@ -161,7 +172,7 @@ export default {
       ].slice(-HISTORY_CAP);
 
       await env.CHAT_MEMORY.put(
-        `chat:${chatId}`,
+        `chat:${phoneNumber}`,
         JSON.stringify(updatedHistory),
         { expirationTtl: HISTORY_TTL }
       );
@@ -169,11 +180,11 @@ export default {
       // Update learner profile if META was extracted
       if (meta) {
         const updatedProfile = updateProfile(profile, meta, text);
-        await env.CHAT_MEMORY.put(`profile:${chatId}`, JSON.stringify(updatedProfile));
+        await env.CHAT_MEMORY.put(`profile:${phoneNumber}`, JSON.stringify(updatedProfile));
       }
 
-      // Persistent exchange log for batch processing via /review-telegram
-      await env.CHAT_MEMORY.put(`log:${chatId}:${Date.now()}`, JSON.stringify({
+      // Persistent exchange log for batch processing via /review-whatsapp
+      await env.CHAT_MEMORY.put(`log:${phoneNumber}:${Date.now()}`, JSON.stringify({
         ts: new Date().toISOString(),
         user: text,
         assistant: cleanText,
@@ -181,7 +192,7 @@ export default {
       }));
     } catch (err) {
       console.error('Worker error:', err.message, err.stack);
-      await sendTelegram(env, chatId, `Samahani — unexpected error: ${err.message}. Check worker logs: npx wrangler tail`);
+      await sendWhatsApp(env, phoneNumberId, phoneNumber, `Samahani — unexpected error: ${err.message}. Check worker logs: npx wrangler tail`);
     }
 
     return new Response('OK', { status: 200 });
@@ -440,65 +451,72 @@ function formatLearnerModel(profile) {
   return lines.join('\n');
 }
 
-// --- Telegram formatting ---
+// --- WhatsApp formatting ---
 
-function formatForTelegram(text) {
-  // Escape HTML entities first
-  let html = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // Triple-backtick code blocks → <pre>
-  html = html.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
-    `<pre>${code.trim()}</pre>`
-  );
+function formatForWhatsApp(text) {
+  // Protect triple-backtick code blocks from other transformations
+  const codeBlocks = [];
+  let result = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
+    codeBlocks.push('```\n' + code.trim() + '\n```');
+    return `__CODEBLOCK_${codeBlocks.length - 1}__`;
+  });
 
   // Table separator rows (|---|---|) → remove
-  html = html.replace(/^\|[-\s|:]+\|$/gm, '');
+  result = result.replace(/^\|[-\s|:]+\|$/gm, '');
   // Table rows (| col | col |) → strip pipes, keep content
-  html = html.replace(/^\|(.+)\|$/gm, (_, row) =>
+  result = result.replace(/^\|(.+)\|$/gm, (_, row) =>
     row.split('|').map(cell => cell.trim()).filter(Boolean).join('  —  ')
   );
 
   // Horizontal rules (--- or ***) → blank line
-  html = html.replace(/^[-*]{3,}\s*$/gm, '');
+  result = result.replace(/^[-*]{3,}\s*$/gm, '');
 
-  // Headings (### text or ## text) → bold
-  html = html.replace(/^#{1,4}\s+(.+)$/gm, '<b>$1</b>');
+  // Headings (### text or ## text) → WhatsApp bold
+  result = result.replace(/^#{1,4}\s+(.+)$/gm, '*$1*');
 
-  // Bold: **text** → <b>text</b>
-  html = html.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  // Italic: *text* → <i>text</i> (after bold to avoid conflicts)
-  html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<i>$1</i>');
-  // Inline code: `text` → <code>text</code>
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold: **text** → *text* (WhatsApp bold is single asterisk)
+  result = result.replace(/\*\*(.+?)\*\*/g, '*$1*');
+  // Italic: *text* → _text_ (after bold conversion to avoid conflict)
+  result = result.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '_$1_');
+
+  // Restore code blocks
+  for (let i = 0; i < codeBlocks.length; i++) {
+    result = result.replace(`__CODEBLOCK_${i}__`, codeBlocks[i]);
+  }
 
   // Collapse 3+ consecutive blank lines → 2
-  html = html.replace(/\n{3,}/g, '\n\n');
+  result = result.replace(/\n{3,}/g, '\n\n');
 
-  return html.trim();
+  return result.trim();
 }
 
-async function sendTelegram(env, chatId, text, parseMode) {
-  const body = { chat_id: chatId, text };
-  if (parseMode) body.parse_mode = parseMode;
-
+async function sendWhatsApp(env, phoneNumberId, to, text) {
   try {
-    const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const res = await fetch(
+      `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to,
+          type: 'text',
+          text: { body: text },
+        }),
+      }
+    );
 
     if (!res.ok) {
       const err = await res.text();
-      console.error('Telegram API error:', res.status, err);
+      console.error('WhatsApp API error:', res.status, err);
       return false;
     }
     return true;
   } catch (err) {
-    console.error('Telegram send error:', err);
+    console.error('WhatsApp send error:', err);
     return false;
   }
 }

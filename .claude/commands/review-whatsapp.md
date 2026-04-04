@@ -1,22 +1,22 @@
-# Review Telegram Exchanges
+# Review WhatsApp Exchanges
 
-Batch-process logged Telegram bot exchanges into `ad_hoc_questions` entries in `data/progress.json`.
+Batch-process logged WhatsApp bot exchanges into `ad_hoc_questions` entries in `data/progress.json`.
 
 ## Steps
 
 1. **Fetch log keys** from Cloudflare KV:
 
 ```bash
-cd mobile/telegram-bot && npx wrangler kv key list --namespace-id=<your-kv-namespace-id> --prefix="log:"
+cd mobile/whatsapp-bot && npx wrangler kv key list --namespace-id=<your-kv-namespace-id> --prefix="log:"
 ```
 
-If no keys are returned, tell Jay "No unprocessed Telegram exchanges found." and stop.
+If no keys are returned, tell Jay "No unprocessed WhatsApp exchanges found." and stop.
 
 2. **Fetch each exchange** value:
 
 For each key from step 1, run:
 ```bash
-cd mobile/telegram-bot && npx wrangler kv key get --namespace-id=<your-kv-namespace-id> "<key>"
+cd mobile/whatsapp-bot && npx wrangler kv key get --namespace-id=<your-kv-namespace-id> "<key>"
 ```
 
 Parse the JSON: `{ ts, user, assistant, had_context }`
@@ -31,7 +31,7 @@ For each exchange, create an entry matching the existing schema in `data/progres
   "question": "<user's original message>",
   "answer_summary": "<1-2 sentence summary of the bot's response>",
   "concepts_touched": ["<grammar concepts or vocab categories involved>"],
-  "source": "telegram",
+  "source": "whatsapp",
   "reinforced_in_session": false
 }
 ```
@@ -50,7 +50,7 @@ Read `data/progress.json`, append the new entries to the `ad_hoc_questions` arra
 
 For each processed key:
 ```bash
-cd mobile/telegram-bot && npx wrangler kv key delete --namespace-id=<your-kv-namespace-id> "<key>" --force
+cd mobile/whatsapp-bot && npx wrangler kv key delete --namespace-id=<your-kv-namespace-id> "<key>" --force
 ```
 
 6. **Report** a summary to Jay:
