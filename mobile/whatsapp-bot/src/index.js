@@ -72,14 +72,20 @@ export default {
     }
 
     try {
-      // Read conversation history (sliding window, 24hr TTL)
+      // Sanitize prior assistant turns against leaked markers before replaying to Claude.
       const historyRaw = await env.CHAT_MEMORY.get(`chat:${phoneNumber}`, 'json');
       let history = [];
       if (Array.isArray(historyRaw)) {
-        history = historyRaw;
+        history = historyRaw.map(turn => ({
+          ...turn,
+          assistant: turn.assistant ? stripMarkers(turn.assistant) : turn.assistant,
+        }));
       } else if (historyRaw && historyRaw.user) {
         // Backward compat: old format was { user, assistant }
-        history = [historyRaw];
+        history = [{
+          ...historyRaw,
+          assistant: historyRaw.assistant ? stripMarkers(historyRaw.assistant) : historyRaw.assistant,
+        }];
       }
 
       // Read learner profile (persistent, no TTL)
@@ -157,13 +163,25 @@ export default {
         return new Response('OK', { status: 200 });
       }
 
-      // Extract and strip META line before delivery
-      const { cleanText, meta } = extractMeta(rawResponse);
+      // Extract and strip META + COPY lines before delivery
+      const afterMeta = extractMeta(rawResponse);
+      const { cleanText, copy } = extractCopy(afterMeta.cleanText);
+      const meta = afterMeta.meta;
+
+      console.log(`extracted copy: ${copy ?? 'none'}`);
 
       // Format for WhatsApp
       const formatted = formatForWhatsApp(cleanText);
 
       await sendWhatsApp(env, phoneNumberId, phoneNumber, formatted);
+
+      // Second message lets Jay long-press the bare phrase — WhatsApp can't select inside a message.
+      if (copy) {
+        const copySent = await sendWhatsApp(env, phoneNumberId, phoneNumber, copy);
+        if (!copySent) {
+          console.error('WhatsApp COPY send failed (main message succeeded)');
+        }
+      }
 
       // Update conversation history (sliding window, cap at HISTORY_CAP)
       const updatedHistory = [
@@ -188,6 +206,7 @@ export default {
         ts: new Date().toISOString(),
         user: text,
         assistant: cleanText,
+        copy_phrase: copy || null,
         had_context: history.length > 0,
       }));
     } catch (err) {
@@ -199,15 +218,15 @@ export default {
   },
 };
 
-// --- META extraction ---
+// --- META + COPY extraction ---
+// Regexes are non-anchored: order of the two trailing markers is not load-bearing.
 
 function extractMeta(responseText) {
-  // Match <<META:{...}>> on its own line (typically the last line)
-  const metaRegex = /\n?<<META:(.*?)>>\s*$/;
+  const metaRegex = /\n?<<META:([^\n]*?)>>\s*/;
   const match = responseText.match(metaRegex);
 
   if (!match) {
-    // Strip any partial/malformed META lines to be safe
+    // Strip any malformed <<META:... fragments (no closing >>) to be safe
     const cleaned = responseText.replace(/\n?<<META:.*$/s, '').trimEnd();
     return { cleanText: cleaned, meta: null };
   }
@@ -221,6 +240,36 @@ function extractMeta(responseText) {
   }
 
   return { cleanText, meta };
+}
+
+function extractCopy(responseText) {
+  const copyRegex = /\n?<<COPY:([^\n]*?)>>\s*/;
+  const match = responseText.match(copyRegex);
+
+  if (!match) {
+    // Strip any malformed <<COPY:... fragments (no closing >>) to be safe
+    const cleaned = responseText.replace(/\n?<<COPY:.*$/s, '').trimEnd();
+    return { cleanText: cleaned, copy: null };
+  }
+
+  const cleanText = responseText.replace(copyRegex, '').trimEnd();
+  const raw = match[1].trim();
+
+  if (raw.length === 0) return { cleanText, copy: null };
+  if (raw.length > 200) {
+    console.error('COPY rejected: too long', raw.length);
+    return { cleanText, copy: null };
+  }
+  if (raw.includes('<<') || raw.includes('>>')) {
+    console.error('COPY rejected: contains marker chars', raw);
+    return { cleanText, copy: null };
+  }
+
+  return { cleanText, copy: raw };
+}
+
+function stripMarkers(text) {
+  return extractCopy(extractMeta(text).cleanText).cleanText;
 }
 
 // --- Learner profile management ---
