@@ -1,4 +1,4 @@
-Answer a Swahili question with a self-contained mini lesson.
+Answer a Swahili question with a self-contained mini lesson — using the exact same structure, rules, and learner calibration as the WhatsApp bot.
 
 **Question**: $ARGUMENTS
 
@@ -6,55 +6,16 @@ Answer a Swahili question with a self-contained mini lesson.
 
 ## Instructions
 
-1. Read `CLAUDE.md` for user context and preferences
-2. Read `data/progress.json` for current tier, mastery levels, and known concepts
-3. Read `data/grammar-reference.md` for grammar accuracy
-4. Read `data/vocabulary-bank.md` for vocabulary accuracy
+1. **Read the bot's system prompt** at `mobile/whatsapp-bot/src/system-prompt.txt` and follow it as the primary source of truth. It defines the Output Format, Rules, Hard rule for translation answers, Auto-Detected Translation Requests, Known Trouble Spots, and current Learner State. The bot's prompt is auto-generated from `data/progress.json`, `data/grammar-reference.md`, and `data/vocabulary-bank.md` — so it already reflects Jay's current tier, weak areas, and recurring mistakes. Use all of it.
 
-## Output Format
+2. **Apply these terminal-context overrides** (and only these — everything else in the bot prompt applies as written):
+   - **Do NOT emit `<<COPY:...>>` lines.** Those are WhatsApp transport (so Jay can long-press to copy on his phone). In Claude Code he can select text directly.
+   - **Do NOT emit `<<META:...>>` lines.** Those are bot-internal tracking. The skill does its own logging — see step 4.
+   - **Standard markdown is fine.** The bot prompt restricts to WhatsApp formatting (single `*bold*`, `_italic_`, no tables/headings). In Claude Code, standard markdown renders properly — use `**bold**` for labels, tables and `###` headings if they aid clarity, etc. Keep it scannable.
 
-Provide a complete, non-interactive answer — no questions, no exercises, just a thorough context package.
+3. **If progress data appears stale**, the bot's system prompt may not have been regenerated recently. If you notice tier/sessions in the prompt don't match the latest entries in `data/progress.json`, prefer the JSON and mention it briefly. (To regenerate: `bash mobile/build-prompt.sh`.)
 
-```
-📎 [English phrase/question restated]
-
-**Swahili:** [Translation]
-
-**Breakdown:**
-- [morpheme-by-morpheme breakdown, e.g. ni-na-m-penda = I + present + him/her + love]
-- [noun class, verb form, or pattern name identified]
-
-**Grammar note:**
-[1-3 sentences: which rule applies, why this form, any irregularities]
-[If user already knows the underlying grammar (check mastery), reference it: "You already know -na- present tense — this uses the same pattern"]
-[If user doesn't know the grammar yet, explain simply and note it's coming in lessons]
-
-**In context:**
-1. [Example sentence using it naturally] = [translation]
-2. [Second example, different context] = [translation]
-
-**Kenyan usage:** [How it's used in Kenya specifically — register, alternatives, when to use/avoid. Skip this section entirely if not relevant.]
-
-**Related:** [1-2 related words/phrases they might also want]
-
-🏷️ Logged for reinforcement in a future lesson.
-```
-
-## Answer Principles
-
-- **Non-interactive**: No questions, no exercises — just a complete answer
-- **Calibrated**: Check `progress.json` for current tier and mastery. If the question involves grammar they've mastered, reference it briefly ("You know this pattern"). If it's above their current tier, explain simply without full teach complexity.
-- **Kenyan dialect preferred**: Use Kenyan Swahili forms — default to casual Nairobi conversational register
-- **Casual but correct**: Natural conversational Swahili, not textbook formal. Lead with how people actually say it. If a formal version exists, note it briefly as background.
-- **Ambiguity**: If the question has multiple interpretations, give the most common/useful one first, then note alternatives
-- **Multiple translations**: If several valid translations exist, lead with the most natural Kenyan option
-- **Reverse direction**: If the user asks "what does X mean?" (Swahili → English), flip the format — put the Swahili first, then break it down
-
-## Logging
-
-After displaying the answer, update `data/progress.json`:
-
-Append an entry to the `ad_hoc_questions` array:
+4. **After displaying the answer**, append an entry to `data/progress.json` under the `ad_hoc_questions` array:
 
 ```json
 {
@@ -69,7 +30,8 @@ Append an entry to the `ad_hoc_questions` array:
 }
 ```
 
-- `related_concepts`: Use keys matching `grammar_mastery` categories (e.g., "present_na", "object_infixes", "possessives")
-- `related_vocab`: Individual words from the answer that should be reinforced
-- `reinforced`: Starts `false` — flipped to `true` by `/swahili` sessions when practiced
-- `reinforced_date`: Set by `/swahili` when reinforced
+- `related_concepts`: keys matching `grammar_mastery` categories in progress.json (e.g., "present_na", "object_infixes", "possessives")
+- `related_vocab`: individual Swahili words from the answer worth reinforcing later
+- `reinforced` / `reinforced_date`: leave as `false` / `null` — flipped by `/swahili` sessions when practiced
+
+End with a single line: `🏷️ Logged for reinforcement in a future lesson.`
