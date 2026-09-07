@@ -3,3 +3,15 @@
 *.swo
 *~
 node_modules/
+
+# Local configuration and private runtime data
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+data/progress.json
+mobile/*-bot/wrangler.toml
+mobile/*-bot/src/system-prompt.txt
+mobile/*-bot/.wrangler/
+mobile/*-bot/.dev.vars
+*.log

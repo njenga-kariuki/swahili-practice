@@ -10,6 +10,10 @@ WRANGLER="$SCRIPT_DIR/node_modules/.bin/wrangler"
 TOML="$SCRIPT_DIR/wrangler.toml"
 PROMPT="$SCRIPT_DIR/src/system-prompt.txt"
 
+if [[ ! -f "$TOML" ]]; then
+  cp "$SCRIPT_DIR/wrangler.example.toml" "$TOML"
+fi
+
 echo "=== Swahili WhatsApp Bot Setup ==="
 echo ""
 

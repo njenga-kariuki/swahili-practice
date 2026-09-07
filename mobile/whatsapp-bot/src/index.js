@@ -175,7 +175,7 @@ export default {
 
       await sendWhatsApp(env, phoneNumberId, phoneNumber, formatted);
 
-      // Second message lets Jay long-press the bare phrase — WhatsApp can't select inside a message.
+      // Second message lets the learner long-press the bare phrase — WhatsApp can't select inside a message.
       if (copy) {
         const copySent = await sendWhatsApp(env, phoneNumberId, phoneNumber, copy);
         if (!copySent) {
@@ -473,7 +473,7 @@ function formatLearnerModel(profile) {
     const familyVocab = recent.filter(([, v]) => v.source === 'family_message').map(([k]) => k);
     const otherVocab = recent.filter(([, v]) => v.source !== 'family_message').map(([k]) => k);
 
-    lines.push('\n### Vocabulary Jay Encounters');
+    lines.push('\n### Vocabulary the learner Encounters');
     if (familyVocab.length > 0) lines.push(`- From family messages: ${familyVocab.join(', ')}`);
     if (otherVocab.length > 0) lines.push(`- From questions: ${otherVocab.join(', ')}`);
   }
@@ -491,11 +491,11 @@ function formatLearnerModel(profile) {
 
   // Usage instructions
   lines.push('\n### How to Use This');
-  lines.push('- When Jay asks about something near a detected gap, explain more carefully with extra examples');
+  lines.push('- When the learner asks about something near a detected gap, explain more carefully with extra examples');
   lines.push('- Reference prior interactions naturally ("This connects to the kwa pattern you asked about")');
-  lines.push('- Use vocabulary Jay has encountered before in your example sentences');
+  lines.push('- Use vocabulary the learner has encountered before in your example sentences');
   lines.push('- Use family conversation scenarios when giving contextual examples');
-  lines.push('- When Jay demonstrates solid understanding, be briefer and reference the pattern by name');
+  lines.push('- When the learner demonstrates solid understanding, be briefer and reference the pattern by name');
 
   return lines.join('\n');
 }

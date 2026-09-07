@@ -7,16 +7,16 @@ Batch-process logged WhatsApp bot exchanges into `ad_hoc_questions` entries in `
 1. **Fetch log keys** from Cloudflare KV:
 
 ```bash
-cd mobile/whatsapp-bot && npx wrangler kv key list --namespace-id=<your-kv-namespace-id> --prefix="log:"
+cd mobile/whatsapp-bot && npx wrangler kv key list --namespace-id="$CHAT_MEMORY_NAMESPACE_ID" --prefix="log:"
 ```
 
-If no keys are returned, tell Jay "No unprocessed WhatsApp exchanges found." and stop.
+If no keys are returned, tell the learner "No unprocessed WhatsApp exchanges found." and stop.
 
 2. **Fetch each exchange** value:
 
 For each key from step 1, run:
 ```bash
-cd mobile/whatsapp-bot && npx wrangler kv key get --namespace-id=<your-kv-namespace-id> "<key>"
+cd mobile/whatsapp-bot && npx wrangler kv key get --namespace-id="$CHAT_MEMORY_NAMESPACE_ID" "<key>"
 ```
 
 Parse the JSON: `{ ts, user, assistant, had_context }`
@@ -50,10 +50,10 @@ Read `data/progress.json`, append the new entries to the `ad_hoc_questions` arra
 
 For each processed key:
 ```bash
-cd mobile/whatsapp-bot && npx wrangler kv key delete --namespace-id=<your-kv-namespace-id> "<key>" --force
+cd mobile/whatsapp-bot && npx wrangler kv key delete --namespace-id="$CHAT_MEMORY_NAMESPACE_ID" "<key>" --force
 ```
 
-6. **Report** a summary to Jay:
+6. **Report** a summary to the learner:
 - How many exchanges were processed
 - Key concepts touched (aggregated)
 - Any exchanges that were skipped and why

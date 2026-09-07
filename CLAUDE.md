@@ -4,16 +4,16 @@
 Daily 10-15 minute Swahili practice focused on building conversational fluency in Kenyan Swahili.
 
 ## User Context
-- Native English speaker with ~4 years casual Swahili (Duolingo + 3 Stanford courses)
-- Currently rusty after 6-month break
+- English-speaking learner rebuilding conversational Swahili
+- Returning to regular practice
 - Goal: Conversational fluency in everyday Kenyan Swahili — casual Nairobi register first, business formality later
 - NOT aiming for academic expertise or formal business fluency yet — casual, natural, how Nairobians actually talk
 
 ## Core Philosophy
 **Teach, then talk.** Every session explicitly teaches a grammar concept first, practices it in structured exercises, then applies it in a conversational scenario. This follows the learn → practice → apply progression that adult L2 learners need. Conversation is the goal, but instruction comes first.
 
-## What Jay Already Knows (from Stanford)
-See `references/Swahili_Class_Vocab_12.1_v3.pdf` for full baseline.
+## Starting grammar and vocabulary
+Set your starting level in `data/progress.json`; use `data/progress.example.json` as the empty template.
 
 **Grammar:**
 - Subject prefixes: ni-, u-, a-, tu-, m-, wa-

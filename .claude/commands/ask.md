@@ -6,10 +6,10 @@ Answer a Swahili question with a self-contained mini lesson — using the exact 
 
 ## Instructions
 
-1. **Read the bot's system prompt** at `mobile/whatsapp-bot/src/system-prompt.txt` and follow it as the primary source of truth. It defines the Output Format, Rules, Hard rule for translation answers, Auto-Detected Translation Requests, Known Trouble Spots, and current Learner State. The bot's prompt is auto-generated from `data/progress.json`, `data/grammar-reference.md`, and `data/vocabulary-bank.md` — so it already reflects Jay's current tier, weak areas, and recurring mistakes. Use all of it.
+1. **Read the bot's system prompt** at `mobile/whatsapp-bot/src/system-prompt.txt` and follow it as the primary source of truth. It defines the Output Format, Rules, Hard rule for translation answers, Auto-Detected Translation Requests, Known Trouble Spots, and current Learner State. The bot's prompt is auto-generated from `data/progress.json`, `data/grammar-reference.md`, and `data/vocabulary-bank.md` — so it already reflects the learner's current tier, weak areas, and recurring mistakes. Use all of it.
 
 2. **Apply these terminal-context overrides** (and only these — everything else in the bot prompt applies as written):
-   - **Do NOT emit `<<COPY:...>>` lines.** Those are WhatsApp transport (so Jay can long-press to copy on his phone). In Claude Code he can select text directly.
+   - **Do NOT emit `<<COPY:...>>` lines.** Those are WhatsApp transport (so the learner can long-press to copy on his phone). In Claude Code he can select text directly.
    - **Do NOT emit `<<META:...>>` lines.** Those are bot-internal tracking. The skill does its own logging — see step 4.
    - **Standard markdown is fine.** The bot prompt restricts to WhatsApp formatting (single `*bold*`, `_italic_`, no tables/headings). In Claude Code, standard markdown renders properly — use `**bold**` for labels, tables and `###` headings if they aid clarity, etc. Keep it scannable.
 

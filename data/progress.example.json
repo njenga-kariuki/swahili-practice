@@ -1,0 +1,278 @@
+{
+  "user_profile": {
+    "name": "Learner",
+    "start_date": null,
+    "current_tier": 1,
+    "sessions_completed": 0,
+    "total_exercises_attempted": 0,
+    "total_exercises_correct": 0
+  },
+  "grammar_mastery": {
+    "subject_prefixes": {
+      "ni": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "u": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "a": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "tu": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "m": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "wa": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "tenses": {
+      "present_na": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "past_li": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "future_ta": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "perfect_me": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "already_sha": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "habitual_hu": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "negation": {
+      "present_si": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "past_ku": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "future_ta": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "perfect_ja": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "object_infixes": {
+      "ni_me": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "ku_you": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "m_him_her": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "tu_us": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "wa_them": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "noun_classes": {
+      "m_wa": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "m_mi": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "ki_vi": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "ji_ma": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "n_n": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "u_n": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "verb_extensions": {
+      "applicative_ea": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "reciprocal_ana": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "passive_wa": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "stative_ika": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "causative_isha": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "possessives": {
+      "basic": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      },
+      "noun_class_agreement": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "locative": {
+      "nyumbani_kwake": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "conjunctions": {
+      "kabla_ya": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "subjunctive": {
+      "basic": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "infinitive_after_modal": {
+      "paswa_ku": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    },
+    "imperative_object_infix": {
+      "basic": {
+        "mastery": 0,
+        "attempts": 0,
+        "correct": 0,
+        "last_practiced": null
+      }
+    }
+  },
+  "session_history": [],
+  "mistake_patterns": [],
+  "ad_hoc_questions": [],
+  "vocabulary_mastery": {},
+  "confusion_patterns": [],
+  "flagged_gaps": [],
+  "consecutive_struggles": {},
+  "notes": null
+}

@@ -1,0 +1,15 @@
+name = "swahili-bot"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[[rules]]
+type = "Text"
+globs = ["**/*.txt"]
+
+[[kv_namespaces]]
+binding = "CHAT_MEMORY"
+id = "<created-during-setup>"
+
+[vars]
+ALLOWED_PHONE_NUMBERS = "<your-phone-number>"
+MODEL = "claude-sonnet-4-6"
