@@ -69,6 +69,7 @@ Set your starting level in `data/progress.json`; use `data/progress.example.json
 - `/swahili` - Standard adaptive session
 - `/swahili review` - Focus on weak areas
 - `/swahili explain [concept]` - Deep dive on specific grammar
+- `/msg [content]` - Draft a casual Kenyan Swahili message to send and copy it to the clipboard
 
 ## Data Files
 - `data/progress.json` - Session history, mastery scores, mistake patterns
