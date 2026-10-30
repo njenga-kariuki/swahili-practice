@@ -34,4 +34,26 @@ Answer a Swahili question with a self-contained mini lesson — using the exact 
 - `related_vocab`: individual Swahili words from the answer worth reinforcing later
 - `reinforced` / `reinforced_date`: leave as `false` / `null` — flipped by `/swahili` sessions when practiced
 
-End with a single line: `🏷️ Logged for reinforcement in a future lesson.`
+5. **Copy the canonical Swahili to the clipboard via `pbcopy`** — every time, when applicable. Mirror the bot's `<<COPY:...>>` decision rule, just executed as a `pbcopy` command instead of an emitted line:
+
+   **Copy when** the answer's primary purpose is to deliver a Swahili phrase the learner would actually send/say to someone:
+   - "How do you say X?" / "What's the Swahili for X?" / "Translate X to Swahili" → English → Swahili
+   - Bare English phrase (e.g. "looking forward to it", multi-sentence drafts) → English → Swahili
+   - `q ` prefix (explicit quick-translate)
+
+   **Skip the copy when** there's no canonical Swahili phrase to paste:
+   - Bare Swahili phrase or "what does X mean?" → Swahili → English
+   - Grammar question, comparison, or explanation
+   - Conversational practice replies
+   - Anything where you'd have to guess what the learner wants to paste
+
+   Format rules for what gets piped to `pbcopy`:
+   - Bare Swahili text taken from the **Swahili:** field — no markdown, no asterisks, no underscores, no quotes, no labels, no emoji, no leading/trailing whitespace
+   - Single line, no internal newlines
+   - The canonical primary translation only (Kenyan casual default) — even if your explanation lists formal/alternate variants, only the one the learner should send goes to clipboard
+   - Use `printf '%s' '...' | pbcopy` (not `echo`, which adds a trailing newline)
+   - For single-quote safety, prefer double-quoted heredoc or escape carefully
+
+   After copying, end with: `📋 Copied to clipboard — paste and send.` followed by `🏷️ Logged for reinforcement in a future lesson.`
+
+   If you skipped the copy (grammar question, etc.), end with just `🏷️ Logged for reinforcement in a future lesson.`

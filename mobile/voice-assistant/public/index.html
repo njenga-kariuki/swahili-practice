@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#f5f0e5" />
+    <meta name="description" content="The learner's personal realtime Kenyan Swahili voice coach." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Mwalimu" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Mwalimu — Swahili Voice Coach</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup" aria-label="Mwalimu home">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <div>
+            <p class="eyebrow">Kiswahili chako</p>
+            <h1>Mwalimu</h1>
+          </div>
+        </div>
+        <button class="icon-button" id="settingsButton" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6" />
+          </svg>
+        </button>
+      </header>
+
+      <main>
+        <section class="mode-picker" aria-labelledby="modeTitle">
+          <div class="section-heading">
+            <p class="eyebrow" id="modeTitle">Leo tufanye nini?</p>
+            <span class="model-pill" id="modelPill">Realtime 2.1</span>
+          </div>
+          <div class="mode-grid" role="radiogroup" aria-label="Practice mode">
+            <button class="mode-card is-selected" data-mode="conversation" role="radio" aria-checked="true">
+              <span class="mode-icon warm" aria-hidden="true">✦</span>
+              <span><strong>Conversation</strong><small>Ongea kawaida</small></span>
+            </button>
+            <button class="mode-card" data-mode="lesson" role="radio" aria-checked="false">
+              <span class="mode-icon green" aria-hidden="true">Aa</span>
+              <span><strong>Guided lesson</strong><small>Teach · practice · apply</small></span>
+            </button>
+            <button class="mode-card" data-mode="quick" role="radio" aria-checked="false">
+              <span class="mode-icon blue" aria-hidden="true">?</span>
+              <span><strong>Quick help</strong><small>Translate or explain</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="voice-stage" aria-live="polite">
+          <div class="voice-orb" id="voiceOrb" aria-hidden="true">
+            <span class="orb-core">S</span>
+            <span class="ring ring-one"></span>
+            <span class="ring ring-two"></span>
+            <span class="ring ring-three"></span>
+          </div>
+          <p class="status-kicker" id="statusKicker">Tayari</p>
+          <h2 id="statusTitle">Ready when you are</h2>
+          <p class="status-detail" id="statusDetail">Tap below and start speaking naturally.</p>
+
+          <button class="primary-button" id="startButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
+              <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" />
+            </svg>
+            <span>Anza kuzungumza</span>
+          </button>
+
+          <div class="call-controls" id="callControls" hidden>
+            <button class="round-control" id="muteButton" aria-label="Mute microphone">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" />
+                <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" />
+              </svg>
+              <span>Mute</span>
+            </button>
+            <button class="round-control end" id="endButton" aria-label="End voice session">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14" />
+              </svg>
+              <span>End</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="transcript-card" id="transcriptCard" hidden aria-label="Live transcript">
+          <div class="transcript-header">
+            <p class="eyebrow">Live notes</p>
+            <button class="text-button" id="clearTranscriptButton">Clear</button>
+          </div>
+          <div class="transcript" id="transcript"></div>
+          <form class="text-entry" id="textForm">
+            <input id="textInput" type="text" placeholder="Or type a quick question…" autocomplete="off" />
+            <button type="submit" aria-label="Send typed message">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-4 14-3-6-7-1Z" /></svg>
+            </button>
+          </form>
+        </section>
+
+        <button class="install-card" id="installButton" hidden>
+          <span class="install-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 19h14" /></svg>
+          </span>
+          <span><strong>Add Mwalimu to your iPhone</strong><small>Open in one tap from your Home Screen</small></span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>
+      </main>
+
+      <footer>
+        <span class="privacy-dot"></span>
+        Your OpenAI key stays on the private server
+      </footer>
+    </div>
+
+    <audio id="remoteAudio" autoplay playsinline></audio>
+
+    <dialog id="settingsDialog" class="sheet-dialog">
+      <form method="dialog" class="sheet">
+        <div class="sheet-grabber" aria-hidden="true"></div>
+        <div class="sheet-title-row">
+          <div><p class="eyebrow">Mwalimu</p><h2>Settings</h2></div>
+          <button class="icon-button small" value="cancel" aria-label="Close settings">×</button>
+        </div>
+
+        <fieldset>
+          <legend>Voice model</legend>
+          <label class="setting-option">
+            <input type="radio" name="model" value="gpt-realtime-2.1" checked />
+            <span><strong>Best voice</strong><small>GPT Realtime 2.1 · newest full model</small></span>
+            <span class="checkmark">✓</span>
+          </label>
+          <label class="setting-option">
+            <input type="radio" name="model" value="gpt-realtime-2.1-mini" />
+            <span><strong>Fast + lower cost</strong><small>GPT Realtime 2.1 mini</small></span>
+            <span class="checkmark">✓</span>
+          </label>
+        </fieldset>
+
+        <div class="setting-row">
+          <span><strong>Private pairing</strong><small id="pairingStatus">Paired to this phone</small></span>
+          <button type="button" class="secondary-button compact" id="changeCodeButton">Change</button>
+        </div>
+
+        <p class="setting-note">Model changes apply the next time you start a voice session.</p>
+        <button class="primary-button full" value="default">Done</button>
+      </form>
+    </dialog>
+
+    <dialog id="pairingDialog" class="center-dialog">
+      <form class="pairing-card" id="pairingForm">
+        <span class="brand-mark large" aria-hidden="true">M</span>
+        <p class="eyebrow">Private access</p>
+        <h2>Pair this iPhone</h2>
+        <p>Enter the private code created when Mwalimu was deployed. You only do this once.</p>
+        <label>
+          <span>Pairing code</span>
+          <input id="pairingInput" type="password" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" required />
+        </label>
+        <p class="form-error" id="pairingError" hidden></p>
+        <button class="primary-button full" type="submit">Pair phone</button>
+      </form>
+    </dialog>
+
+    <dialog id="installDialog" class="sheet-dialog">
+      <form method="dialog" class="sheet install-sheet">
+        <div class="sheet-grabber" aria-hidden="true"></div>
+        <span class="brand-mark large" aria-hidden="true">M</span>
+        <p class="eyebrow">One-time setup</p>
+        <h2>Add Mwalimu to your Home Screen</h2>
+        <ol class="install-steps">
+          <li><span>1</span><p>Open this page in <strong>Safari</strong>.</p></li>
+          <li><span>2</span><p>Tap the <strong>Share</strong> button at the bottom of Safari.</p></li>
+          <li><span>3</span><p>Choose <strong>Add to Home Screen</strong>, then tap Add.</p></li>
+        </ol>
+        <button class="primary-button full" value="default">Got it</button>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
